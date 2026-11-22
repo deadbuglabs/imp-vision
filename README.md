@@ -6,6 +6,8 @@ The glasses connect to a phone and nothing else — no hub, no cloud account, no
 
 ## What it sees
 
+Real thermal imaging and real night vision, fused, in glasses you would wear anywhere. Nobody sells that combination. Fused thermal + night-vision systems exist only as military gear — helmet-mounted, bulky, issued rather than bought. IMP-VISION is being built to put both senses in an ordinary frame.
+
 - **Thermal imaging** — a FLIR Lepton-class 160×120 radiometric core on the full-sense build. Real heat signatures, not blobs.
 - **Night vision** — a no-IR-cut camera with 940 nm illuminators that emit no visible glow.
 - **IR Source Watch** — passive detection of other active IR emitters (camera night-vision arrays, illuminators), labelled with classification and confidence.
