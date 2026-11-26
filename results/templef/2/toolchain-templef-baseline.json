@@ -1,0 +1,42 @@
+{
+  "schema": "templef-sweep-result/1",
+  "run_number": 2,
+  "run_id": "45743526730",
+  "family": "toolchain",
+  "variant": "templef-baseline",
+  "status": "toolchain-ok",
+  "reason": "Temple-F baseline DRC reproduced on runner",
+  "templef_reference": {
+    "unconnected": 50,
+    "shorts": 0,
+    "clearance": 2
+  },
+  "verdict_vs_templef": "tie",
+  "drc_clean": false,
+  "drc": {
+    "unconnected": 50,
+    "clearance": 2,
+    "shorts": 0,
+    "total": 1026,
+    "footprint_errors": 0,
+    "copper_edge_clearance": 31,
+    "courtyards_overlap": 65,
+    "drill_out_of_range": 12,
+    "hole_clearance": 6,
+    "hole_near_hole": 136,
+    "holes_co_located": 199,
+    "items_not_allowed": 199,
+    "lib_footprint_issues": 91,
+    "silk_edge_clearance": 15,
+    "silk_over_copper": 107,
+    "silk_overlap": 150,
+    "text_height": 11,
+    "track_dangling": 1,
+    "unconnected_items": 50,
+    "via_dangling": 1,
+    "unconnected_from": "header"
+  },
+  "baseline_drc": null,
+  "board_md5": "af531665acd5dc7b0f543ce80cde5273",
+  "finished_utc": "2026-11-26T02:37:38Z"
+}
