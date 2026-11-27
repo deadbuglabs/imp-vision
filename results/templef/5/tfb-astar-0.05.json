@@ -1,0 +1,42 @@
+{
+  "schema": "templef-sweep-result/1",
+  "run_number": 5,
+  "run_id": "46007092745",
+  "family": "tfb",
+  "variant": "astar-0.05",
+  "status": "blocked",
+  "reason": "family driver tools/sweep-templef/tfb/run.sh not in repo yet (family worker has not landed it)",
+  "templef_reference": {
+    "unconnected": 50,
+    "shorts": 0,
+    "clearance": 2
+  },
+  "verdict_vs_templef": "n/a",
+  "drc_clean": false,
+  "drc": null,
+  "baseline_drc": {
+    "unconnected": 50,
+    "clearance": 2,
+    "shorts": 0,
+    "total": 1026,
+    "footprint_errors": 0,
+    "copper_edge_clearance": 31,
+    "courtyards_overlap": 65,
+    "drill_out_of_range": 12,
+    "hole_clearance": 6,
+    "hole_near_hole": 136,
+    "holes_co_located": 199,
+    "items_not_allowed": 199,
+    "lib_footprint_issues": 91,
+    "silk_edge_clearance": 15,
+    "silk_over_copper": 107,
+    "silk_overlap": 150,
+    "text_height": 11,
+    "track_dangling": 1,
+    "unconnected_items": 50,
+    "via_dangling": 1,
+    "unconnected_from": "header"
+  },
+  "board_md5": "af531665acd5dc7b0f543ce80cde5273",
+  "finished_utc": "2026-11-27T13:27:34Z"
+}
