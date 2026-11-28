@@ -89,9 +89,9 @@ jobs:
           allowed_fams = {'tfa', 'tfb', 'tfc', 'tfd', 'tfr1', 'tfr2', 'tfr3', 'tfr4'}
           allowed_vars = {'astar-0.1', 'astar-0.05', 'astar-0.02', 'freerouting-mp3', 'freerouting-mp10', 'gated-pairs'}
           if not fams or set(fams) - allowed_fams:
-          raise SystemExit('invalid families: %s' % ','.join(sorted(set(fams) - allowed_fams)))
+              raise SystemExit('invalid families: %s' % ','.join(sorted(set(fams) - allowed_fams)))
           if not vars_ or set(vars_) - allowed_vars:
-          raise SystemExit('invalid variants: %s' % ','.join(sorted(set(vars_) - allowed_vars)))
+              raise SystemExit('invalid variants: %s' % ','.join(sorted(set(vars_) - allowed_vars)))
           combos = [{'family': f, 'variant': v} for f in fams for v in vars_]
           out = os.environ['GITHUB_OUTPUT']
           with open(out, 'a') as fh:
