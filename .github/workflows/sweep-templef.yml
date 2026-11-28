@@ -86,6 +86,12 @@ jobs:
           import json, os
           fams = [f.strip() for f in os.environ.get('FAMILIES', 'tfa,tfb,tfc,tfd').split(',') if f.strip()]
           vars_ = [v.strip() for v in os.environ.get('VARIANTS', 'astar-0.1,astar-0.05,astar-0.02,freerouting-mp3,freerouting-mp10,gated-pairs').split(',') if v.strip()]
+          allowed_fams = {'tfa', 'tfb', 'tfc', 'tfd', 'tfr1', 'tfr2', 'tfr3', 'tfr4'}
+          allowed_vars = {'astar-0.1', 'astar-0.05', 'astar-0.02', 'freerouting-mp3', 'freerouting-mp10', 'gated-pairs'}
+          if not fams or set(fams) - allowed_fams:
+          raise SystemExit('invalid families: %s' % ','.join(sorted(set(fams) - allowed_fams)))
+          if not vars_ or set(vars_) - allowed_vars:
+          raise SystemExit('invalid variants: %s' % ','.join(sorted(set(vars_) - allowed_vars)))
           combos = [{'family': f, 'variant': v} for f in fams for v in vars_]
           out = os.environ['GITHUB_OUTPUT']
           with open(out, 'a') as fh:
@@ -100,6 +106,7 @@ jobs:
 
   toolchain:
     name: Toolchain smoke (Temple-F DRC + live results)
+    if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -277,7 +284,7 @@ jobs:
   aggregate:
     name: Aggregate live summary
     needs: [setup, sweep]
-    if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
+    if: always() && needs.setup.result == 'success' && needs.sweep.result == 'success' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -327,21 +334,53 @@ jobs:
           set -e
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git fetch origin sweep-results 2>/dev/null || true
+          if git ls-remote --exit-code --heads origin sweep-results >/dev/null 2>&1; then
+            git fetch --no-tags origin refs/heads/sweep-results:refs/remotes/origin/sweep-results
+          else
+            fetch_status=$?
+            if [ "$fetch_status" -ne 2 ]; then
+              echo "failed to check/fetch origin sweep-results"
+              exit "$fetch_status"
+            fi
+          fi
           rm -rf /tmp/sweep-results-wt-templef
           if git rev-parse --verify origin/sweep-results >/dev/null 2>&1; then
             git worktree add /tmp/sweep-results-wt-templef sweep-results
           else
             git worktree add --detach /tmp/sweep-results-wt-templef
             git -C /tmp/sweep-results-wt-templef checkout --orphan sweep-results
-            git -C /tmp/sweep-results-wt-templef rm -rf . 2>/dev/null || true
+            git -C /tmp/sweep-results-wt-templef read-tree --empty
+            git -C /tmp/sweep-results-wt-templef clean -fdx
           fi
           mkdir -p "/tmp/sweep-results-wt-templef/results/templef/history"
           cp summary-out/summary.json "/tmp/sweep-results-wt-templef/results/templef/summary.json"
           cp summary-out/summary.json "/tmp/sweep-results-wt-templef/results/templef/history/${{ github.run_number }}-summary.json"
           cd /tmp/sweep-results-wt-templef
           git add results/templef/summary.json "results/templef/history/${{ github.run_number }}-summary.json"
-          git commit -m "templef sweep summary run ${{ github.run_number }}" || echo 'nothing to commit'
-          git push origin sweep-results || (git pull --rebase origin sweep-results && git push origin sweep-results)
+          if git diff --cached --quiet; then
+            echo 'nothing staged; nothing to commit'
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/sweep-results-wt-templef
+            exit 0
+          fi
+          git commit -m "templef sweep summary run ${{ github.run_number }}"
+          for i in 1 2 3 4 5; do
+            if git push origin sweep-results; then
+              break
+            fi
+            if [ "$i" -eq 5 ]; then
+              echo 'push failed after 5 attempts'
+              exit 1
+            fi
+            echo "push failed; rebasing before retry $((i + 1))/5"
+            if ! git pull --rebase origin sweep-results; then
+              git rebase --abort 2>/dev/null || true
+            fi
+            delay=$((1 << (i - 1)))
+            jitter=$((RANDOM % (delay + 1)))
+            wait_seconds=$((delay + jitter))
+            echo "waiting ${wait_seconds}s before next push attempt"
+            sleep "$wait_seconds"
+          done
           cd "$GITHUB_WORKSPACE"
           git worktree remove --force /tmp/sweep-results-wt-templef
