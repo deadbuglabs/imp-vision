@@ -336,7 +336,7 @@ jobs:
             git -C /tmp/sweep-results-wt-templef checkout --orphan sweep-results
             git -C /tmp/sweep-results-wt-templef rm -rf . 2>/dev/null || true
           fi
-          mkdir -p "/tmp/sweep-results-wt-templef/results/templef/${{ github.run_number }}/history"
+          mkdir -p "/tmp/sweep-results-wt-templef/results/templef/history"
           cp summary-out/summary.json "/tmp/sweep-results-wt-templef/results/templef/summary.json"
           cp summary-out/summary.json "/tmp/sweep-results-wt-templef/results/templef/history/${{ github.run_number }}-summary.json"
           cd /tmp/sweep-results-wt-templef
